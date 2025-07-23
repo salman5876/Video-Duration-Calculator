@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Duration Calculator</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+      --container-bg: rgba(255,255,255,0.98);
+      --container-shadow: 0 10px 36px rgba(80,120,200,0.13), 0 1.5px 6px rgba(80,120,200,0.08);
+      --primary: #3b82f6;
+      --primary-light: #66a6ff;
+      --primary-gradient: linear-gradient(120deg, #66a6ff 0%, #89f7fe 100%);
+      --remove-gradient: linear-gradient(120deg, #ff6b6b 0%, #ffb199 100%);
+      --remove-gradient-hover: linear-gradient(120deg, #e63946 0%, #ffb199 100%);
+      --input-bg: #f7fafc;
+      --input-border: #e3eaf5;
+      --input-focus: #7eb6ff;
+      --row-bg: #f7fafd;
+      --row-shadow: 0 1px 4px rgba(102,166,255,0.04);
+      --row-shadow-hover: 0 2px 10px rgba(102,166,255,0.10);
+      --price-bg: #f1f8ff;
+      --price-shadow: 0 1px 4px rgba(102,166,255,0.07);
+      --result-gradient: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+      --result-shadow: 0 2px 12px rgba(142,197,252,0.13);
+      --text-main: #2d3a4b;
+      --text-sub: #5a6d8a;
+      --text-label: #4a5a6a;
+      --result-strong: #3b82f6;
+      --divider: #e3eaf5;
+    }
+    body.dark {
+      --bg-gradient: linear-gradient(120deg, #232526 0%, #414345 100%);
+      --container-bg: rgba(32,34,37,0.98);
+      --container-shadow: 0 10px 36px rgba(30,40,60,0.25), 0 1.5px 6px rgba(30,40,60,0.18);
+      --primary: #60a5fa;
+      --primary-light: #3b82f6;
+      --primary-gradient: linear-gradient(120deg, #3b82f6 0%, #60a5fa 100%);
+      --remove-gradient: linear-gradient(120deg, #ff6b6b 0%, #b24592 100%);
+      --remove-gradient-hover: linear-gradient(120deg, #e63946 0%, #b24592 100%);
+      --input-bg: #23272f;
+      --input-border: #3a4151;
+      --input-focus: #60a5fa;
+      --row-bg: #23272f;
+      --row-shadow: 0 1px 4px rgba(60,120,255,0.08);
+      --row-shadow-hover: 0 2px 10px rgba(60,120,255,0.16);
+      --price-bg: #23272f;
+      --price-shadow: 0 1px 4px rgba(60,120,255,0.10);
+      --result-gradient: linear-gradient(120deg, #232526 0%, #414345 100%);
+      --result-shadow: 0 2px 12px rgba(60,120,255,0.13);
+      --text-main: #f3f6fa;
+      --text-sub: #b0b8c7;
+      --text-label: #b0b8c7;
+      --result-strong: #60a5fa;
+      --divider: #3a4151;
+    }
+    body {
+      background: var(--bg-gradient);
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: background 0.4s;
+    }
+    .container {
+      background: var(--container-bg);
+      margin-top: 48px;
+      padding: 38px 32px 28px 32px;
+      border-radius: 22px;
+      box-shadow: var(--container-shadow);
+      max-width: 440px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    .container:before {
+      content: '';
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, #a1c4fd 0%, #c2e9fb 100%);
+      opacity: 0.18;
+      z-index: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    body.dark .container:before {
+      opacity: 0.08;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 1.1rem;
+      color: var(--text-label);
+      user-select: none;
+    }
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s, border 0.3s;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-slider {
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      transition: left 0.3s, background 0.3s;
+      box-shadow: 0 1px 4px rgba(60,120,255,0.10);
+    }
+    .toggle-switch.dark .toggle-slider {
+      left: 22px;
+      background: var(--primary-gradient);
+    }
+    .toggle-switch:active .toggle-slider {
+      box-shadow: 0 2px 8px rgba(60,120,255,0.18);
+    }
+    h1 {
+      text-align: center;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      font-size: 2.2rem;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      z-index: 1;
+      position: relative;
+      transition: color 0.4s;
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 1.08rem;
+      margin-bottom: 22px;
+      z-index: 1;
+      position: relative;
+      transition: color 0.4s;
+    }
+    .divider {
+      border: none;
+      border-top: 1.5px solid var(--divider);
+      margin: 18px 0 22px 0;
+      transition: border-color 0.4s;
+    }
+    .inputs {
+      margin-bottom: 18px;
+      z-index: 1;
+      position: relative;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+      background: var(--row-bg);
+      border-radius: 8px;
+      padding: 8px 10px 8px 12px;
+      box-shadow: var(--row-shadow);
+      transition: box-shadow 0.2s, background 0.4s;
+    }
+    .row:hover {
+      box-shadow: var(--row-shadow-hover);
+    }
+    .row input[type="number"] {
+      width: 70px;
+      padding: 8px 10px;
+      border: 1.5px solid var(--input-border);
+      border-radius: 7px;
+      font-size: 1.08rem;
+      background: var(--input-bg);
+      transition: border 0.2s, box-shadow 0.2s, background 0.4s, color 0.4s;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+    .row input[type="number"]:focus {
+      border: 1.5px solid var(--input-focus);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--input-border);
+    }
+    .row label {
+      font-size: 1.08rem;
+      color: var(--text-label);
+      min-width: 60px;
+      font-weight: 500;
+      transition: color 0.4s;
+    }
+    .remove-btn {
+      background: var(--remove-gradient);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(255,107,107,0.10);
+    }
+    .remove-btn:hover {
+      background: var(--remove-gradient-hover);
+      box-shadow: 0 2px 8px rgba(255,107,107,0.18);
+    }
+    .add-btn {
+      background: var(--primary-gradient);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      font-size: 1.08rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      transition: background 0.2s, box-shadow 0.2s;
+      display: block;
+      width: 100%;
+      box-shadow: 0 1px 4px rgba(102,166,255,0.10);
+    }
+    .add-btn:hover {
+      background: var(--primary-gradient);
+      box-shadow: 0 2px 10px rgba(102,166,255,0.18);
+      filter: brightness(0.95);
+    }
+    .price-section {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--price-bg);
+      border-radius: 9px;
+      padding: 12px 14px;
+      box-shadow: var(--price-shadow);
+      font-size: 1.08rem;
+      font-weight: 500;
+      color: var(--text-main);
+      z-index: 1;
+      position: relative;
+      transition: background 0.4s, color 0.4s;
+    }
+    .price-section label {
+      min-width: 140px;
+      color: var(--text-label);
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color 0.4s;
+    }
+    .price-section input[type="number"] {
+      width: 110px;
+      padding: 8px 10px;
+      border: 1.5px solid var(--input-border);
+      border-radius: 7px;
+      font-size: 1.08rem;
+      background: var(--input-bg);
+      transition: border 0.2s, box-shadow 0.2s, background 0.4s, color 0.4s;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+    .price-section input[type="number"]:focus {
+      border: 1.5px solid var(--input-focus);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--input-border);
+    }
+    .result {
+      background: var(--result-gradient);
+      border-radius: 12px;
+      padding: 22px 16px 18px 16px;
+      margin-top: 28px;
+      text-align: center;
+      font-size: 1.22rem;
+      color: var(--text-main);
+      box-shadow: var(--result-shadow);
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      z-index: 1;
+      position: relative;
+      transition: background 0.4s, color 0.4s, box-shadow 0.4s;
+    }
+    .result strong {
+      color: var(--result-strong);
+      font-size: 1.28rem;
+      transition: color 0.4s;
+    }
+    @media (max-width: 500px) {
+      .container {
+        padding: 8vw 2vw 4vw 2vw;
+        max-width: 100vw;
+        min-width: 0;
+      }
+      h1 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+      }
+      .subtitle {
+        font-size: 0.98rem;
+        margin-bottom: 14px;
+      }
+      .theme-toggle {
+        top: 8px;
+        right: 10px;
+        font-size: 1rem;
+        gap: 4px;
+      }
+      .toggle-switch {
+        width: 36px;
+        height: 20px;
+      }
+      .toggle-slider {
+        width: 16px;
+        height: 16px;
+        top: 2px;
+      }
+      .toggle-switch.dark .toggle-slider {
+        left: 18px;
+      }
+      .toggle-switch:active .toggle-slider {
+        box-shadow: 0 2px 8px rgba(60,120,255,0.18);
+      }
+      .row label, .price-section label {
+        min-width: 40px;
+        font-size: 0.92rem;
+      }
+      .row, .price-section {
+        font-size: 0.98rem;
+        padding: 7px 4px 7px 7px;
+        gap: 6px;
+      }
+      .row input[type="number"], .price-section input[type="number"] {
+        width: 48px;
+        font-size: 0.98rem;
+        padding: 7px 6px;
+      }
+      .add-btn {
+        font-size: 0.98rem;
+        padding: 8px 0;
+      }
+      .result {
+        font-size: 0.98rem;
+        padding: 10px 2px 8px 2px;
+        margin-top: 18px;
+      }
+    }
+    @media (max-width: 350px) {
+      .container {
+        padding: 2vw 1vw 2vw 1vw;
+      }
+      .theme-toggle {
+        top: 4px;
+        right: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="theme-toggle">
+      <span id="themeIcon" title="Toggle dark mode" style="font-size:1.2em;">🌙</span>
+      <div class="toggle-switch" id="themeSwitch" onclick="toggleTheme()">
+        <div class="toggle-slider"></div>
+      </div>
+    </div>
+    <h1>Video Duration Calculator</h1>
+    <div class="subtitle">Sum up your video durations and calculate your editing price in seconds!</div>
+    <hr class="divider">
+    <form id="durationForm" autocomplete="off">
+      <div class="inputs" id="inputs">
+        <!-- Dynamic rows go here -->
+      </div>
+      <button type="button" class="add-btn" onclick="addRow()">+ Add Video</button>
+      <div class="price-section">
+        <label for="pricePerMin">Price per minute (Rs)</label>
+        <input type="number" id="pricePerMin" min="0" value="450" oninput="calculateTotal()">
+      </div>
+    </form>
+    <div class="result" id="result">
+      Total: 0 min 0 sec (0 seconds)<br>
+      Price: Rs 0
+    </div>
+  </div>
+  <script>
+    const inputsDiv = document.getElementById('inputs');
+    const resultDiv = document.getElementById('result');
+    let rowCount = 0;
+
+    function createRow(min = '', sec = '') {
+      rowCount++;
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <label>Video ${rowCount}</label>
+        <input type="number" min="0" max="999" placeholder="min" value="${min}" oninput="calculateTotal()" class="min-input">
+        <span>:</span>
+        <input type="number" min="0" max="59" placeholder="sec" value="${sec}" oninput="calculateTotal()" class="sec-input">
+        <button type="button" class="remove-btn" title="Remove" onclick="removeRow(this)">&times;</button>
+      `;
+      inputsDiv.appendChild(row);
+      calculateTotal();
+    }
+
+    function addRow() {
+      createRow();
+    }
+
+    function removeRow(btn) {
+      btn.parentElement.remove();
+      calculateTotal();
+      // Re-label rows
+      Array.from(inputsDiv.children).forEach((row, idx) => {
+        row.querySelector('label').textContent = `Video ${idx + 1}`;
+      });
+      rowCount = inputsDiv.children.length;
+    }
+
+    function calculateTotal() {
+      let totalSec = 0;
+      const rows = inputsDiv.querySelectorAll('.row');
+      rows.forEach(row => {
+        const min = parseInt(row.querySelector('.min-input').value) || 0;
+        const sec = parseInt(row.querySelector('.sec-input').value) || 0;
+        totalSec += min * 60 + sec;
+      });
+      const totalMin = Math.floor(totalSec / 60);
+      const remSec = totalSec % 60;
+      // Price calculation
+      const pricePerMin = parseFloat(document.getElementById('pricePerMin').value) || 0;
+      const totalMinForPrice = Math.ceil(totalSec / 60); // round up for pricing
+      const totalPrice = totalMinForPrice * pricePerMin;
+      resultDiv.innerHTML = `Total: <strong>${totalMin} min ${remSec} sec</strong> (${totalSec} seconds)<br>Price: <strong>Rs ${totalPrice}</strong>`;
+    }
+
+    // Add 3 default rows for user convenience
+    for (let i = 0; i < 3; i++) addRow();
+
+    // Theme toggle logic
+    function setTheme(dark) {
+      document.body.classList.toggle('dark', dark);
+      document.getElementById('themeSwitch').classList.toggle('dark', dark);
+      document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+      localStorage.setItem('videoCalcTheme', dark ? 'dark' : 'light');
+    }
+    function toggleTheme() {
+      const isDark = document.body.classList.contains('dark');
+      setTheme(!isDark);
+    }
+    // On load, set theme from localStorage or system
+    (function() {
+      const saved = localStorage.getItem('videoCalcTheme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        setTheme(true);
+      }
+    })();
+  </script>
+</body>
+</html> 
