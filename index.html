@@ -370,6 +370,72 @@
         right: 4px;
       }
     }
+    .custom-footer {
+      max-width: 440px;
+      margin: 48px auto 0 auto;
+      background: var(--footer-bg, linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%));
+      color: var(--footer-text, #4a5a6a);
+      text-align: center;
+      padding: 18px 18px 14px 18px;
+      font-size: 0.97rem;
+      letter-spacing: 0.08px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(80,120,200,0.10);
+      border: none;
+      transition: background 0.4s, color 0.4s, box-shadow 0.4s;
+      animation: fadeInFooter 0.8s;
+    }
+    .custom-footer .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+      font-family: inherit;
+    }
+    .custom-footer a {
+      color: var(--footer-link, #3b82f6);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1.5px dotted var(--footer-link, #3b82f6);
+      padding-bottom: 1px;
+      transition: color 0.2s, border-bottom 0.2s;
+      word-break: break-all;
+    }
+    .custom-footer a:hover {
+      color: var(--primary);
+      border-bottom: 1.5px solid var(--primary);
+    }
+    .custom-footer strong {
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    body.dark .custom-footer {
+      --footer-bg: linear-gradient(120deg, #232526 0%, #414345 100%);
+      --footer-text: #b0b8c7;
+      --footer-link: #60a5fa;
+      box-shadow: 0 4px 24px rgba(60,120,255,0.13);
+    }
+    body:not(.dark) .custom-footer {
+      --footer-bg: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+      --footer-text: #4a5a6a;
+      --footer-link: #3b82f6;
+    }
+    @keyframes fadeInFooter {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (max-width: 500px) {
+      .custom-footer {
+        font-size: 0.90rem;
+        padding: 12px 2vw 10px 2vw;
+        margin-top: 28px;
+        border-radius: 10px;
+        max-width: 99vw;
+      }
+      .custom-footer .footer-content {
+        max-width: 98vw;
+      }
+    }
   </style>
 </head>
 <body>
@@ -398,6 +464,15 @@
       Price: Rs 0
     </div>
   </div>
+
+    <footer class="custom-footer">
+      <div class="footer-content">
+        Designed &amp; Developed by <strong>The Dev Knights</strong> <br>
+        <a href="https://www.thedevknights.com" target="_blank">www.thedevknights.com</a> |
+        <a href="mailto:info@thedevknights.com">info@thedevknights.com</a>
+      </div>
+    </footer>
+
   <script>
     const inputsDiv = document.getElementById('inputs');
     const resultDiv = document.getElementById('result');
