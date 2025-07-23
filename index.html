@@ -444,9 +444,9 @@
       const remSec = totalSec % 60;
       // Price calculation
       const pricePerMin = parseFloat(document.getElementById('pricePerMin').value) || 0;
-      const totalMinForPrice = Math.ceil(totalSec / 60); // round up for pricing
-      const totalPrice = totalMinForPrice * pricePerMin;
-      resultDiv.innerHTML = `Total: <strong>${totalMin} min ${remSec} sec</strong> (${totalSec} seconds)<br>Price: <strong>Rs ${totalPrice}</strong>`;
+      const totalMinutesPrecise = totalSec / 60;
+      const totalPrice = totalMinutesPrecise * pricePerMin;
+      resultDiv.innerHTML = `Total: <strong>${totalMin} min ${remSec} sec</strong> (${totalSec} seconds)<br>Price: <strong>Rs ${totalPrice.toFixed(2)}</strong>`;
     }
 
     // Add 3 default rows for user convenience
